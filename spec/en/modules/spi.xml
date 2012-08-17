@@ -346,6 +346,8 @@
       
       <programlisting><![CDATA[public abstract class CDI<T> implements Instance<T> {
    public static <T> CDI<T> current() { ... }
+   public static <T> CDI<T> currentFromResolver( CDIProviderResolver resolver ) { ... }
+   public static <T> CDIBootstrap withDefaultResolver() { ... }
    public abstract BeanManager getBeanManager();
 }]]></programlisting>
       
@@ -359,6 +361,21 @@
       
       <programlisting><![CDATA[public interface CDIProvider {
    public <T> CDI<T> getCDI();
+}]]></programlisting>
+
+      <para>A portable extension may also obtain a reference to the current container
+       using a custom <literal></literal> by calling <literal>CDI.currentFromResolver(CDIProviderResolver resolver)</literal>.</para>       
+      <para> When <literal>CDI.currentFromResolver(resolver)</literal> is called, the getProviders()
+      method of the resolver is called, the first 
+      <literal>javax.enterprise.inject.spi.CDIProvider</literal> is extracted, and the 
+      <literal>CDIProvider.getCDI()</literal> method called. If no providers are
+      available an IllegalStateException is thrown.</para>
+      
+      <para>Custom resolvers can be very useful to locate the current CDI implementation in
+      modular environments.</para>
+      
+      <programlisting><![CDATA[public interface CDIProviderResolver {
+    Set<CDIProvider> getProviders(); 
 }]]></programlisting>
       
       <para>Java EE components may obtain an instance of <literal>BeanManager</literal> 
